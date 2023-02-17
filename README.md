@@ -5,6 +5,8 @@ In this project, we will define simple Queries and mutations to get, add and upd
 
 ## Project structure
 The project is setup in a module structure where every Module has it's own GraphQL schema, queries and resolvers. This makes it easy to seperate logic. Inside `app/index.ts` we read all `Schema.graphql` and `Resolvers.ts` from all modules. In this case, `app/Person` is a module of it's own.
+![Screenshot 2023-02-17 at 12 31 01](https://user-images.githubusercontent.com/20843520/219606793-b7b44cf2-87ed-4eed-aa48-df26ba06d65b.png)
+
 
 ## Creating a new module
 - Create a new folder inside app folder
