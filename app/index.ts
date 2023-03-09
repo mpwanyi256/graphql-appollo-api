@@ -4,22 +4,35 @@ import { loadFiles } from "@graphql-tools/load-files";
 import express from "express";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import http from "http";
+require('dotenv').config()
+import mongoose from 'mongoose';
 
-async function startApolloServer() {
+(async () => {
   const app = express();
   const httpServer = http.createServer(app);
   const server = new ApolloServer({
-    typeDefs: await loadFiles('app/**/Schema.graphql'),
-    resolvers: await loadFiles('app/**/Resolvers.ts'),
+    typeDefs: await loadFiles('app/**/graphql/Schema.graphql'),
+    resolvers: await loadFiles('app/**/graphql/Resolvers.ts'),
     //tell Express to attach GraphQL functionality to the server
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   }) as any;
-  await server.start(); //start the GraphQL server.
-  server.applyMiddleware({ app });
-  await new Promise<void>((resolve) =>
-    httpServer.listen({ port: 4000 }, resolve) //run the server on port 4000
+
+  await new Promise<void>((resolve) =>{
+    const DB = process.env.NODE_ENV === 'test' ? 'test' : process.env.DB_NAME
+    console.log('connecting to mongoDB server')
+    mongoose
+      .set('strictQuery', true)
+      .connect(`mongodb://localhost:27017/${DB}`)
+      .then(async () => {
+        await server.start(); //start the GraphQL server.
+        server.applyMiddleware({ app });
+        console.log('connected to database successfully')
+        httpServer.listen({ port: 4000 }, resolve)
+        console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
+      })
+      .catch(e => {
+        console.log('Connection to mongoDB server failed')
+      })
+  }
   );
-  console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
-}
-//in the end, run the server and pass in our Schema and Resolver.
-startApolloServer();
+})()

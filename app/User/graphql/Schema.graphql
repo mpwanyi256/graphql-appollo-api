@@ -1,0 +1,27 @@
+enum USER_ROLE {
+    admin,
+    user,
+    super
+}
+
+type User {
+    _id: ID!
+    user_name: String
+    email: String
+    role: USER_ROLE
+    is_active: Boolean
+    # createdAt: DATETIME
+}
+
+input GetUsersInput {
+    page: Int
+    ItemsPerPage: Int
+}
+
+type Query {
+    getUsers(input: GetUsersInput): [User]
+}
+
+type Mutation {
+    addPerson(name: String): User
+}

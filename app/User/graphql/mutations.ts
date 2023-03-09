@@ -1,5 +1,5 @@
-import { NewPerson, Person } from "./types"
-import people from "./dataset"
+import { NewPerson, Person } from "../types"
+import people from "../dataset"
 
 const addPerson = (_:any, args: NewPerson): Person => {
     const newPerson: Person = {
