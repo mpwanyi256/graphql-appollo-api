@@ -1,0 +1,13 @@
+type UserProfile {
+    _id: ID!
+    user: User
+    first_name: String
+    last_name: String
+    contact: String
+    createdAt: String
+    updatedAt: String
+}
+
+type Query {
+    getProfiles(input: paginationInput): [UserProfile]
+}

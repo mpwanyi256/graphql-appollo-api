@@ -1,7 +1,8 @@
 import graphqlFields from 'graphql-fields'
 
 import UserService from '../services'
-import { User } from '../../@types/types'
+
+import { User } from '../types'
 
 const getUsers = async (_: any, { input }: any, context: any, info: any): Promise<User[]> => {
     const fields = graphqlFields(info)

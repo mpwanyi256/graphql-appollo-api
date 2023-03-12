@@ -1,7 +1,7 @@
 import { AnyObject } from 'mongoose'
 import User from '../models/User'
 
-import { CreateUserInput, FindAllUsersParams } from './types'
+import { addUserInput, FindAllUsersParams } from './types'
 
 /**
  * Runs a query on a user table to return an existing user depending on the query
@@ -27,7 +27,7 @@ const findUserById = (id: String) => {
  * @param {*} password User password
  * @returns Created user object
  */
-const createUser = ({ email, password }: CreateUserInput) => {
+const addUser = ({ email, password }: addUserInput) => {
     const user = new User({
         email,
         password
@@ -48,7 +48,7 @@ const findAllUsers = ({ Page, ItemsPerPage, fields }: FindAllUsersParams) => {
 
 export default {
     findAUser,
-    createUser,
+    addUser,
     findUserById,
     findAllUsers
-};
+}

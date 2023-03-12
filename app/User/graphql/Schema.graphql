@@ -4,24 +4,35 @@ enum USER_ROLE {
     super
 }
 
+# Types
 type User {
     _id: ID!
-    user_name: String
     email: String
     role: USER_ROLE
     is_active: Boolean
-    # createdAt: DATETIME
+    createdAt: String
+    updatedAt: String
 }
 
-input GetUsersInput {
+# input types
+input paginationInput {
     page: Int
     ItemsPerPage: Int
 }
 
+input CreateUserInput {
+    email: String
+    password: String
+    role: USER_ROLE
+    first_name: String
+    last_name: String
+    contact: String
+}
+
 type Query {
-    getUsers(input: GetUsersInput): [User]
+    getUsers(input: paginationInput): [User]
 }
 
 type Mutation {
-    addPerson(name: String): User
+    createUser(input: CreateUserInput): User
 }
