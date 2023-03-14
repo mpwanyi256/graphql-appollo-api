@@ -7,6 +7,9 @@ import http from "http";
 require('dotenv').config()
 import mongoose from 'mongoose';
 
+// RabitMQ
+import RabitMQ from './plugins/rabitMq'
+
 (async () => {
   const app = express();
   const httpServer = http.createServer(app);
@@ -18,21 +21,28 @@ import mongoose from 'mongoose';
   }) as any;
 
   await new Promise<void>((resolve) =>{
-    const DB = process.env.NODE_ENV === 'test' ? 'test' : process.env.DB_NAME
-    console.log('connecting to mongoDB server')
-    mongoose
-      .set('strictQuery', true)
-      .connect(`mongodb://localhost:27017/${DB}`)
-      .then(async () => {
-        await server.start(); //start the GraphQL server.
-        server.applyMiddleware({ app });
-        console.log('connected to database successfully')
-        httpServer.listen({ port: 4000 }, resolve)
-        console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
-      })
-      .catch(e => {
-        console.log('Connection to mongoDB server failed')
-      })
+    const DB = process.env.MQ_LOCAL === 'test' ? 'test' : process.env.DB_NAME
+    // Connect to RabitMQ
+    RabitMQ.init(process.env.MQ_LOCAL, () => {
+      mongoose
+        .set('strictQuery', true)
+        .connect(`mongodb://localhost:27017/${DB}`)
+        .then(async () => {
+          await server.start(); //start the GraphQL server.
+          server.applyMiddleware({ app });
+          console.log('connected to mongoDB successfully')
+          httpServer.listen({ port: 4000 }, resolve)
+          console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
+        })
+        .catch(e => {
+          console.log('Connection to mongoDB server failed')
+        })
+
+        process.on('beforeExit', async () => {
+          RabitMQ.closeConnection()
+          await mongoose.disconnect()
+        })
+    })
   }
   );
 })()

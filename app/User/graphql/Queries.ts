@@ -16,6 +16,8 @@ const getUsers = async (_: any, { input }: any, context: any, info: any): Promis
         ItemsPerPage,
         fields: requestedFileds
     })
+    console.log('all', all[0]);
+    
     return all
 }
 

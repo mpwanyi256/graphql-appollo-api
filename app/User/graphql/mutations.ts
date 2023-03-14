@@ -4,6 +4,8 @@ import { UserProfile } from '../../Profile/types'
 import UserServices from '../services'
 import ProfileServices from '../../Profile/services'
 
+import RabitMQ from '../../plugins/rabitMq'
+
 const createUser = async (_:any, args: CreateUserInput): Promise<User> => {
     console.log('args', args)
     const { email, password, role, first_name, last_name, contact } = args.input
@@ -21,7 +23,6 @@ const createUser = async (_:any, args: CreateUserInput): Promise<User> => {
         password
     });
 
-    console.log('created user', newUser);
     const createUserProfile: UserProfile = await ProfileServices.create({
         user_id: newUser._id,
         first_name,
@@ -29,7 +30,17 @@ const createUser = async (_:any, args: CreateUserInput): Promise<User> => {
         contact,
         role
     })
-    console.log('created user profile', createUserProfile)
+    // Send message to channel
+    const data = {
+        topic: 'user',
+        action: 'create',
+        data: {
+            profile: createUserProfile,
+            user: newUser
+        }
+    }
+
+    RabitMQ.sendMessageToQue(data)
 
     return newUser
 }

@@ -10,4 +10,6 @@ type UserProfile {
 
 type Query {
     getProfiles(input: paginationInput): [UserProfile]
+
+    getProfileById(id: String): UserProfile
 }

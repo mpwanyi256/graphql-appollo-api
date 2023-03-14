@@ -15,9 +15,20 @@ const create = ({ user_id, first_name, last_name, contact, role}: createUserProf
     return userProfile.save();
 };
 
-const findById = (id: String) => {
-    return UserProfile.findById(id)
-    .populate('user', '_id username email role');
+const findById = (id: String, fields: AnyObject) => {
+    const modelKeys = Object.keys(fields);
+    const userFields = fields.user ? Object.keys(fields.user) : []
+
+    if (userFields.length) {
+        return UserProfile
+            .findById(id)
+            .select(modelKeys)
+            .populate('user', userFields.join(' '));
+    }
+
+    return UserProfile
+            .findById(id)
+            .select(modelKeys);
 }
 
 const find = (params: AnyObject) => {
