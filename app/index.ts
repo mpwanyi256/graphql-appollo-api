@@ -26,7 +26,8 @@ import RabitMQ from './plugins/rabitMq'
     RabitMQ.init(process.env.MQ_LOCAL, () => {
       mongoose
         .set('strictQuery', true)
-        .connect(`mongodb://localhost:27017/${DB}`)
+        // .connect(`mongodb://localhost:27017/${DB}`)
+        .connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@prodev.zrwtpt1.mongodb.net/?retryWrites=true&w=majority`)
         .then(async () => {
           await server.start(); //start the GraphQL server.
           server.applyMiddleware({ app });
@@ -35,7 +36,7 @@ import RabitMQ from './plugins/rabitMq'
           console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
         })
         .catch(e => {
-          console.log('Connection to mongoDB server failed')
+          console.log('Connection to mongoDB server failed', e)
         })
 
         process.on('beforeExit', async () => {
